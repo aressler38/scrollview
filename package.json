@@ -1,0 +1,13 @@
+{
+  "name": "scrollview",
+  "author": "aressler38",
+  "dependencies": {},
+  "devDependencies": {
+    "browserify": "^12.0.1"
+  },
+	"scripts" : {
+		"clean" : "touch build; rm -rf build; mkdir build;",
+		"copy" : "cp build/scrollview.js test/scrollview.js",
+		"build" : "npm run-script clean && node_modules/browserify/bin/cmd.js src/js/*.js -o build/scrollview.js && npm run-script copy"
+	}
+}
