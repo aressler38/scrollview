@@ -20,6 +20,7 @@ class ScrollView {
 		this.containers = [ ];
 
 		this.y0 = null;
+		this.offset = 0;
 		
 
 		var _isScrolling = false;
@@ -28,28 +29,32 @@ class ScrollView {
 			self.y0 = e.touches[0].clientY;
 			_isScrolling = true;
 		});
+
 		this.el.addEventListener('touchmove', function (e) {
-			var y0, y;
+			var i, y0, y, dyMod, container, dy;
 			if ( _isScrolling ) {
 				y0 = self.y0;
 				y = e.touches[0].clientY;
-				var dy = y - y0;
-				var dyMod = dy % self.containerTemplateHeight;
-				var container;
-				if ( dy > self.containerTemplateHeight ) {
+				dy = y - y0;
+				dyMod = dy % self.containerTemplateHeight;
+				if ( dy > self.containerTemplateHeight ) { // scrolling up 
 					container = self.el.firstChild; 
-					self.el.removeChild( container );
-					self.el.appendChild( container );
-				} else if ( dy < self.containerTemplateHeight ) {
+					--self.offset;
+					self.y0 = y;
+				} else if ( dy < -self.containerTemplateHeight ) { // scrolling down
 					container = self.el.lastChild; 
-					self.el.removeChild( container );
-					self.el.insertBefore(container, self.el.firstChild);
+					++self.offset;
+					self.y0 = y;
+					self.shiftUp();
 				}
-				for ( var i=0; i<self.containers.length; ++i ) {
-					self.containers[i].style.transform = 'translate3d(0,'+dyMod+'px,0)';
+
+				for ( i=0; i<self.containers.length; ++i ) {
+					self.containers[i].style.transform = 'translate3d(0,'+((i-1)*self.containerTemplateHeight + dyMod)+'px,0)';
 				}
+
 			}
 		});
+
 		this.el.addEventListener('touchend', function (e) {
 			self.y0 = null;
 			_isScrolling = false;
@@ -63,6 +68,19 @@ class ScrollView {
 
 	}
 
+	/** 
+	 * Move data from higher indexed elements to lower indexed elements.
+	 */
+	shiftUp () {
+		for ( var i=0; i<this.containers.length-1; ++i ) {
+			this.containers[i].innerHTML = this.containers[i+1].innerHTML; // TODO: get it from the dataset
+		}
+		this.containers[ this.containers.length-1 ].innerHTML = ''; // get it from the dataset...
+	}
+
+	shiftDown () {
+
+	}
 
 	setContainerTemplate (element) {
 		this.containerTemplate = element.cloneNode(true);
@@ -103,9 +121,13 @@ class ScrollView {
 			this.appendContainer(''+i);
 		}
 
+		this.refresh();
 	}
 
 
+	/**
+	 * Remove the container DOM elements.
+	 */
 	clear () {
 		while ( this.el.lastChild ) {
 			this.el.removeChild(this.el.lastChild);
@@ -115,8 +137,13 @@ class ScrollView {
 		}
 	}
 
+	/**
+	 * Set the transforms of the container elements so they line up properly.
+	 */
 	refresh () {
-
+		for ( var i=0; i<this.containers.length; ++i ) {
+			this.containers[i].style.transform = 'translate3d(0,'+((i-1)*this.containerTemplateHeight)+'px,0)';
+		}
 	}
 
 	update () {
