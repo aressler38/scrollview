@@ -23,6 +23,8 @@ class ScrollView extends Base {
 		this.dataset = [ ];
 		this.containers = [ ];
 
+		// The template wraps each element from `this.dataset` and ensures every element is the same height. 
+		// TODO: I don't think this thing needs to be publicly exposed
 		var _template = null;
 		Object.defineProperty(this, 'template', {
 			set : function (node) { 
@@ -31,6 +33,7 @@ class ScrollView extends Base {
 			},
 			get : function () { return _template.cloneNode(true); }
 		});
+		this.template = document.createElement('div');
 
 
 		this.y0 = null;
@@ -118,8 +121,6 @@ class ScrollView extends Base {
 			this.isScrolling = false;
 			this.dy = 0;
 			this.y0 = 0;
-
-			console.debug(this.dy, velocity, self.velocityThreshold);
 
 			// ----------------------------------------------
 			// START MOMENTUM SCROLLING IF CONDITIONS ARE MET

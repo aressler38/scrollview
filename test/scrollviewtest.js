@@ -12,8 +12,6 @@ var scrollview;
 function main () {
 	
 	scrollview = new ScrollView();
-	scrollview.template = document.createElement('div');
-
 
 	document.body.querySelector('#test-box').appendChild(scrollview.node);
 

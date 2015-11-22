@@ -9,6 +9,7 @@ Currently only supports infinite scrolling in the y-axis.
 
 # TODO
 
+1. There's a strange issue when scrolling down and scrolling back up to the top--can't always get it to stick to the top.
 1. Tweak momentum scrolling
 1. Accelerated momentum scrolling (swipeswipeswipe...)
 1. Mouse/keyboard controlls
