@@ -59,7 +59,12 @@ class ScrollView extends Base {
 		function onTouchStart (e) {
 			this.t0 = Date.now();
 			this.y0 = e.touches[0].clientY;
+			this.dy = 0;
 			this.isScrolling = true;
+			// This enables touch to stop
+			if ( ! this.renderer.isExpired ) { // If there's already a renderer, expire it to stop it.
+				this.renderer.isExpired = true;
+			}
 		}
 
 		/**
@@ -98,26 +103,28 @@ class ScrollView extends Base {
 
 		}
 
+
 		/**
 		 * @this sharedContext
 		 * @todo `self` is scrollview... once moved, need to fix this reference
 		 */
 		function onTouchEnd () {
-
 			var velocity = this.dy / (Date.now() - this.t0);
 			var magnitude = Math.abs(this.dy);
 
-			this.y0 = 0;
 			this.isScrolling = false;
+			this.dy = 0;
+			this.y0 = 0;
 
+			console.debug(this.dy, velocity, self.velocityThreshold);
 
 			// ----------------------------------------------
 			// START MOMENTUM SCROLLING IF CONDITIONS ARE MET
 			// ----------------------------------------------
 
 			if (
-					self.velocityThreshold < Math.abs(velocity) &&
-					self.sensitivityThreshold < magnitude
+			  self.velocityThreshold < Math.abs(velocity) &&
+			  self.sensitivityThreshold < magnitude
 			) {
 
 				if ( ! this.renderer.isExpired ) { // If there's already a renderer, expire it to stop it.
@@ -147,7 +154,6 @@ class ScrollView extends Base {
 				}, durationVal);
 				self.addRenderer(this.renderer); // ... and put it in the render container
 			}
-
 		}
 
 	}
