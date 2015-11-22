@@ -25,7 +25,10 @@ class ScrollView extends Base {
 
 		var _template = null;
 		Object.defineProperty(this, 'template', {
-			set : function (node) { _template = node.cloneNode(true); },
+			set : function (node) { 
+				_template = node.cloneNode(true); 
+				_template.classList.add('scrollview-element');
+			},
 			get : function () { return _template.cloneNode(true); }
 		});
 
@@ -180,7 +183,7 @@ class ScrollView extends Base {
 	 * Clear out all containers. Insert a single container and measure it's height vs this.el's height.
 	 * Append additional containers until the viewing area is covered by containers.
 	 */
-	createContainers () {
+	initialize () {
 		this.clear();
 		var rect = this.node.getBoundingClientRect();
 		var computedStyle = getComputedStyle( this.node );
