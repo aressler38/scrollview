@@ -11,7 +11,6 @@ Currently only supports infinite scrolling in the y-axis.
 
 1. Tweak momentum scrolling
 1. Accelerated momentum scrolling (swipeswipeswipe...)
-1. touch to stop scrolling.
 1. Mouse/keyboard controlls
 1. See todos in js code...
 1. Scroll bar (mostly as a positional indicator)
