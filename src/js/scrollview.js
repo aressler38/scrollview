@@ -32,18 +32,18 @@ class ScrollView extends Base {
 
 		this.y0 = null;
 		this.offset = 0;
-		this.viewableTemplates = 0; 
+		this.viewableTemplates = 0;
 
 		var sharedContext = {
 			dy:0,
 			y0:0,
 			t0:0,
 			isScrolling:false,
-			renderer: {} 
+			renderer: {}
 		};
 
 		this.node.addEventListener('touchstart', function (e) { onTouchStart.call(sharedContext, e); });
-		this.node.addEventListener('touchmove', function (e) { 
+		this.node.addEventListener('touchmove', function (e) {
 			if ( sharedContext.isScrolling ) {
 				e.preventDefault();
 				onTouchMove.call(sharedContext, e.touches[0].clientY);
@@ -67,34 +67,34 @@ class ScrollView extends Base {
 		 * @todo `self` is scrollview... once moved, need to fix this reference
 		 */
 		function onTouchMove (y) {
-				this.dy = y - this.y0;
-				var dyMod = this.dy % self.containerTemplateHeight;
-				var isScrollingUp = this.dy > self.containerTemplateHeight ;
-				var isScrollingDown = this.dy < -self.containerTemplateHeight ;
+			this.dy = y - this.y0;
+			var dyMod = this.dy % self.containerTemplateHeight;
+			var isScrollingUp = this.dy > self.containerTemplateHeight ;
+			var isScrollingDown = this.dy < -self.containerTemplateHeight ;
 
 
-				if ( isScrollingUp ) { // Shift our dataset viewer.
-					if ( self.offset ) { // Stay within bounds.
-						this.y0 = y;
-						--self.offset;
-						self.shift();
-					} else { 
-						return;
-					}
-				} else if ( isScrollingDown ) { // Shift our dataset viewer.
-					if ( 1+self.offset + self.viewableTemplates < self.dataset.length ) { // Stay within bounds.
-						this.y0 = y;
-						++self.offset;
-						self.shift();
-					} else {
-						return;
-					}
+			if ( isScrollingUp ) { // Shift our dataset viewer.
+				if ( self.offset ) { // Stay within bounds.
+					this.y0 = y;
+					--self.offset;
+					self.shift();
+				} else {
+					return;
 				}
-
-				// Transform the templates, so it looks like we're scrolling up or down
-				for ( var i=0; i<self.containers.length; ++i ) {
-					self.containers[i].style.transform = 'translate3d(0,'+((i-1)*self.containerTemplateHeight + dyMod)+'px,0)';
+			} else if ( isScrollingDown ) { // Shift our dataset viewer.
+				if ( 1+self.offset + self.viewableTemplates < self.dataset.length ) { // Stay within bounds.
+					this.y0 = y;
+					++self.offset;
+					self.shift();
+				} else {
+					return;
 				}
+			}
+
+			// Transform the templates, so it looks like we're scrolling up or down
+			for ( var i=0; i<self.containers.length; ++i ) {
+				self.containers[i].style.transform = 'translate3d(0,'+((i-1)*self.containerTemplateHeight + dyMod)+'px,0)';
+			}
 
 		}
 
@@ -104,7 +104,7 @@ class ScrollView extends Base {
 		 */
 		function onTouchEnd () {
 
-			var velocity = this.dy / (Date.now() - this.t0) 
+			var velocity = this.dy / (Date.now() - this.t0);
 			var magnitude = Math.abs(this.dy);
 
 			this.y0 = 0;
@@ -114,8 +114,8 @@ class ScrollView extends Base {
 			// ----------------------------------------------
 			// START MOMENTUM SCROLLING IF CONDITIONS ARE MET
 			// ----------------------------------------------
-				
-			if ( 
+
+			if (
 					self.velocityThreshold < Math.abs(velocity) &&
 					self.sensitivityThreshold < magnitude
 			) {
@@ -139,21 +139,21 @@ class ScrollView extends Base {
 					isScrolling: true
 				};
 
-				// make a renderer  ... 
+				// make a renderer  ...
 				this.renderer = new Renderer(function (t) {
-					var val = self.timingFunction(t-now, beginningVal, changeVal, durationVal); 
+					var val = self.timingFunction(t-now, beginningVal, changeVal, durationVal);
 					//console.debug('v='+velocity, 'mag='+magnitude, 'change='+changeVal, 'val='+val);
 					onTouchMove.call(animationContext, val);
 				}, durationVal);
-				self.addRenderer(this.renderer); // ... and put it in the render container 
-			} 
+				self.addRenderer(this.renderer); // ... and put it in the render container
+			}
 
 		}
 
 	}
 
 
-	/** 
+	/**
 	 * Move data from the dataset to the containers
 	 */
 	shift () {
