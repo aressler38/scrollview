@@ -11,9 +11,12 @@ var scrollview;
 
 function main () {
 	
+	window.scrollview = 
 	scrollview = new ScrollView();
 
 	document.body.querySelector('#test-box').appendChild(scrollview.node);
+
+	scrollview.dataset.push( document.createElement('div') );
 
 	var i=1001;
 	while ( i-- ) {

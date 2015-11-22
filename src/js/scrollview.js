@@ -68,9 +68,8 @@ class ScrollView extends Base {
 			this.dy = 0;
 			this.isScrolling = true;
 			// This enables touch to stop
-			if ( ! this.renderer.isExpired ) { // If there's already a renderer, expire it to stop it.
-				this.renderer.isExpired = true;
-			}
+			// If there's already a renderer, expire it to stop it.
+			this.renderer.isExpired = true;
 		}
 
 		/**
@@ -80,9 +79,8 @@ class ScrollView extends Base {
 		function onTouchMove (y) {
 			this.dy = y - this.y0;
 			var dyMod = this.dy % self.containerTemplateHeight;
-			var isScrollingUp = this.dy > self.containerTemplateHeight ;
-			var isScrollingDown = this.dy < -self.containerTemplateHeight ;
-
+			var isScrollingUp = this.dy >= self.containerTemplateHeight ;
+			var isScrollingDown = this.dy <= -self.containerTemplateHeight ;
 
 			if ( isScrollingUp ) { // Shift our dataset viewer.
 				if ( self.offset ) { // Stay within bounds.
@@ -90,24 +88,43 @@ class ScrollView extends Base {
 					--self.offset;
 					self.shift();
 				} else {
+					this.renderer.isExpired = true;
 					return;
 				}
-			} else if ( isScrollingDown ) { // Shift our dataset viewer.
+			} 
+			else if ( isScrollingDown ) { // Shift our dataset viewer.
 				if ( 1+self.offset + self.viewableTemplates < self.dataset.length ) { // Stay within bounds.
 					this.y0 = y;
 					++self.offset;
 					self.shift();
 				} else {
+					this.renderer.isExpired = true;
 					return;
 				}
 			}
 
-			// Transform the templates, so it looks like we're scrolling up or down
-			for ( var i=0; i<self.containers.length; ++i ) {
-				self.containers[i].style.transform = 'translate3d(0,'+((i-1)*self.containerTemplateHeight + dyMod)+'px,0)';
+			console.log(self.offset, dyMod);
+
+			// don't scroll past the top
+			if ( ! self.offset && 0 < dyMod ) {
+				transformContainers(0);
+				console.debug('returning...');
+				return;	
 			}
 
+			// Transform the templates, so it looks like we're scrolling up or down
+			transformContainers(dyMod);
+
 		}
+
+
+
+		function transformContainers (y) {
+			for ( var i=0; i<self.containers.length; ++i ) {
+				self.containers[i].style.transform = 'translate3d(0,'+((i-1)*self.containerTemplateHeight + y)+'px,0)';
+			}
+		}
+
 
 
 		/**
@@ -130,10 +147,8 @@ class ScrollView extends Base {
 			  self.velocityThreshold < Math.abs(velocity) &&
 			  self.sensitivityThreshold < magnitude
 			) {
-
-				if ( ! this.renderer.isExpired ) { // If there's already a renderer, expire it to stop it.
-					this.renderer.isExpired = true;
-				}
+				// If there's already a renderer, expire it to stop it.
+				this.renderer.isExpired = true;
 
 				// touchstart init stuff
 				var now = Date.now();
@@ -147,7 +162,8 @@ class ScrollView extends Base {
 					t0 : now,
 					y0 : 0,
 					dy : 0,
-					isScrolling: true
+					isScrolling: true,
+					renderer : null
 				};
 
 				// make a renderer  ...
@@ -156,6 +172,7 @@ class ScrollView extends Base {
 					//console.debug('v='+velocity, 'mag='+magnitude, 'change='+changeVal, 'val='+val);
 					onTouchMove.call(animationContext, val);
 				}, durationVal);
+				animationContext.renderer = this.renderer;
 				self.addRenderer(this.renderer); // ... and put it in the render container
 			}
 		}
@@ -169,10 +186,10 @@ class ScrollView extends Base {
 	shift () {
 		var c;
 		for ( var i=0; i<this.containers.length; ++i ) {
-			if ( ! this.dataset[this.offset + i ] ) continue; // prevent boundary error
+			if ( ! this.dataset[this.offset + i] ) continue; // prevent boundary error
 			c = this.containers[i];
 			if ( c.firstChild ) c.removeChild(c.firstChild);
-			c.appendChild(this.dataset[this.offset + i ]);
+			c.appendChild(this.dataset[this.offset + i]);
 		}
 	}
 
@@ -223,10 +240,10 @@ class ScrollView extends Base {
 	 */
 	render () {
 		var c;
-		for (var i=1; i<this.viewableTemplates; ++i) {
+		for (var i=0; i<this.viewableTemplates; ++i) {
 			c = this.containers[i];
 			if ( c.firstChild ) c.removeChild(c.firstChild);
-			c.appendChild(this.dataset[(i-1) + this.offset]);
+			c.appendChild(this.dataset[i+this.offset]);
 		}
 	}
 

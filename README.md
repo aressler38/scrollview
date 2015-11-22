@@ -7,9 +7,10 @@ It's primary purpose is to enable infinite scrolling for touch interfaces.
 
 Currently only supports infinite scrolling in the y-axis.
 
+
 # TODO
 
-1. There's a strange issue when scrolling down and scrolling back up to the top--can't always get it to stick to the top.
+1. scrollview.dataset needs to have the 1st element be an empty div for a buffer; handle this internally
 1. Tweak momentum scrolling
 1. Accelerated momentum scrolling (swipeswipeswipe...)
 1. Mouse/keyboard controlls
