@@ -2,6 +2,7 @@
 
 var Base = require('./base');
 var Renderer = require('./renderer');
+var Adapter = require('./adapter');
 
 
 /**
@@ -12,7 +13,7 @@ class ScrollView extends Base {
 	constructor() {
 		super();
 		var self = this;
-		this.templateHeight = null;
+		this.adapter = new Adapter();
 		this.node = document.createElement('div');
 		this.node.classList.add('scroll-view');
 
@@ -22,19 +23,6 @@ class ScrollView extends Base {
 
 		this.dataset = [ ];
 		this.containers = [ ];
-
-		// The template wraps each element from `this.dataset` and ensures every element is the same height. 
-		// TODO: I don't think this thing needs to be publicly exposed
-		var _template = null;
-		Object.defineProperty(this, 'template', {
-			set : function (node) { 
-				_template = node.cloneNode(true); 
-				_template.classList.add('scrollview-element');
-			},
-			get : function () { return _template.cloneNode(true); }
-		});
-		this.template = document.createElement('div');
-
 
 		this.y0 = null;
 		this.offset = 0;
@@ -91,7 +79,7 @@ class ScrollView extends Base {
 					this.renderer.isExpired = true;
 					return;
 				}
-			} 
+			}
 			else if ( isScrollingDown ) { // Shift our dataset viewer.
 				if ( 1+self.offset + self.viewableTemplates < self.dataset.length ) { // Stay within bounds.
 					this.y0 = y;
@@ -103,13 +91,13 @@ class ScrollView extends Base {
 				}
 			}
 
-			console.log(self.offset, dyMod);
+			//console.log(self.offset, dyMod);
 
 			// don't scroll past the top
 			if ( ! self.offset && 0 < dyMod ) {
 				transformContainers(0);
-				console.debug('returning...');
-				return;	
+				//console.debug('returning...');
+				return;
 			}
 
 			// Transform the templates, so it looks like we're scrolling up or down
@@ -209,7 +197,7 @@ class ScrollView extends Base {
 		var borderHeight = parseInt( computedStyle.borderBottomWidth ) + parseInt( computedStyle.borderTopWidth );
 		var scrollViewHeight = Math.ceil( rect.bottom - rect.top ) - scrollViewPadding - borderHeight;
 
-		this.node.appendChild(this.template);
+		this.node.appendChild( this.adapter.createViewHolder() );
 		var liveTemplate = this.node.querySelector(':first-child');
 
 		rect = liveTemplate.getBoundingClientRect();
@@ -217,7 +205,7 @@ class ScrollView extends Base {
 		this.containerTemplateHeight = dy;
 
 		this.clear();
-		// if y*dy == scrollViewHeight, then we need AT LEAST y sub templates to fill the view.
+		// if y*dy == scrollViewHeight, then we need AT LEAST y sub adapter items to fill the view.
 
 		var y = Math.ceil( scrollViewHeight / dy );
 		this.viewableTemplates = y;
@@ -225,7 +213,7 @@ class ScrollView extends Base {
 		var bufferRoom = 2; // TODO: testing extra containers
 
 		for ( var i=0; i<y + bufferRoom; ++i ) {
-			var container = this.template;
+			var container = this.adapter.createViewHolder();
 			this.node.appendChild(container);
 			this.containers.push(container);
 		}
@@ -272,6 +260,9 @@ class ScrollView extends Base {
 
 
 }
+
+
+
 
 module.exports = ScrollView;
 
