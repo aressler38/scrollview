@@ -4,6 +4,7 @@ var Base = require('./base');
 var Renderer = require('./renderer');
 var Adapter = require('./adapter');
 
+window.Adapter = Adapter;
 
 /**
  * @todo move event binding definitions out of constructor.
@@ -169,7 +170,7 @@ class ScrollView extends Base {
 
 
 	/**
-	 * Move data from the dataset to the containers
+	 * Move data from the dataset to the View Holders.
 	 */
 	shift () {
 		var c;
@@ -197,7 +198,7 @@ class ScrollView extends Base {
 		var borderHeight = parseInt( computedStyle.borderBottomWidth ) + parseInt( computedStyle.borderTopWidth );
 		var scrollViewHeight = Math.ceil( rect.bottom - rect.top ) - scrollViewPadding - borderHeight;
 
-		this.node.appendChild( this.adapter.createViewHolder() );
+		this.node.appendChild( new Adapter.ViewHolder().node );
 		var liveTemplate = this.node.querySelector(':first-child');
 
 		rect = liveTemplate.getBoundingClientRect();
@@ -213,7 +214,7 @@ class ScrollView extends Base {
 		var bufferRoom = 2; // TODO: testing extra containers
 
 		for ( var i=0; i<y + bufferRoom; ++i ) {
-			var container = this.adapter.createViewHolder();
+			var container = new Adapter.ViewHolder().node;
 			this.node.appendChild(container);
 			this.containers.push(container);
 		}
