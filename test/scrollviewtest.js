@@ -1,4 +1,4 @@
-var ScrollView = require('../src/js/scrollview');
+var ScrollView = require('../src/js/ScrollView');
 
 if ( document.readyState === 'complete' || document.readyState === 'interactive' ) {
 	main()

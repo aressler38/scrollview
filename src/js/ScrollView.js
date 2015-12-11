@@ -1,8 +1,8 @@
 'use strict';
 
-var Base = require('./base');
-var Renderer = require('./renderer');
-var Adapter = require('./adapter');
+var Base = require('./Base');
+var Renderer = require('./Renderer');
+var Adapter = require('./Adapter');
 
 window.Adapter = Adapter;
 
